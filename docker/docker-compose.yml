@@ -489,7 +489,7 @@ services:
       - /etc/letsencrypt/live/$API_ADDRESS/privkey.pem:/etc/pooler/privkey.pem:ro
   fastify:
     container_name: supabase-${PROJECT_NAME}-fastify
-    image: node:22.11.0-alpine
+    image: zenika/alpine-chrome:with-puppeteer
     command: 
       - /bin/sh
       - -c
