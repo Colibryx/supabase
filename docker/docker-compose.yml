@@ -489,11 +489,11 @@ services:
       - /etc/letsencrypt/live/$API_ADDRESS/privkey.pem:/etc/pooler/privkey.pem:ro
   fastify:
     container_name: supabase-${PROJECT_NAME}-fastify
-    image: zenika/alpine-chrome:with-puppeteer
+    image: colibryx/supabase-fastify
     command: 
       - /bin/sh
       - -c
-      - cd /home/node/fastify && yarn && yarn build:start
+      - yarn && yarn build:start
     healthcheck:
       test: curl -sSfL --head -o /dev/null "http://127.0.0.1:11000/api/health"
       interval: 10s
