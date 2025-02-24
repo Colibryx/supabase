@@ -487,8 +487,8 @@ services:
       - ./volumes/pooler/pooler.exs:/etc/pooler/pooler.exs:ro
       - /etc/letsencrypt/live/$API_ADDRESS/fullchain.pem:/etc/pooler/fullchain.pem:ro
       - /etc/letsencrypt/live/$API_ADDRESS/privkey.pem:/etc/pooler/privkey.pem:ro
-  fastify:
-    container_name: supabase-${PROJECT_NAME}-fastify
+  fastify_api:
+    container_name: supabase-${PROJECT_NAME}-fastify-api
     image: colibryx/supabase-fastify
     command: 
       - /bin/sh
@@ -508,6 +508,27 @@ services:
     restart: unless-stopped
     volumes:
       - ./volumes/fastify:/home/node/fastify
+  fastify_whatsapp:
+    container_name: supabase-${PROJECT_NAME}-fastify-whatsapp
+    image: colibryx/supabase-fastify
+    command: 
+      - /bin/sh
+      - -c
+      - yarn && yarn build:start:whatsapp
+    healthcheck:
+      test: curl -sSfL --head -o /dev/null "http://127.0.0.1:11000/api/health"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      db:
+        # Disable this if you are using an external Postgres database
+        condition: service_healthy
+      analytics:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./volumes/fastify_whatsapp:/home/node/fastify
   # fastify:
   #   container_name: supabase-${PROJECT_NAME}-fastify
   #   image: oven/bun

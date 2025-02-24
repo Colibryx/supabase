@@ -245,12 +245,24 @@ services:
   - name: fastify-v1
     _comment: 'FASTIFY Functions: /fastify/* -> http://172.17.0.1:11000/*'
     # url: http://172.17.0.1:11000/
-    url: http://fastify:11000/
+    url: http://fastify_api:11000/
     routes:
       - name: fastify-v1-all
         strip_path: true
         paths:
           - /fastify/
+    plugins:
+      - name: cors
+  ## Fastify Whatsapp routes
+  - name: fastify-v1
+    _comment: 'FASTIFY Functions: /fastify/* -> http://172.17.0.1:11000/*'
+    # url: http://172.17.0.1:11000/
+    url: http://fastify_whatsapp:11000/
+    routes:
+      - name: fastify-v1-all
+        strip_path: true
+        paths:
+          - /whatsapp/
     plugins:
       - name: cors
   ## TRPC Docs routes
