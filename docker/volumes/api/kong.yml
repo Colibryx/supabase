@@ -254,7 +254,7 @@ services:
     plugins:
       - name: cors
   ## Fastify Whatsapp routes
-  - name: fastify-v1
+  - name: fastify-whatsapp-v1
     _comment: 'FASTIFY Functions: /fastify/* -> http://172.17.0.1:11000/*'
     # url: http://172.17.0.1:11000/
     url: http://fastify_whatsapp:11000/
