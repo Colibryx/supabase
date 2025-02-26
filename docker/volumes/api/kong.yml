@@ -259,7 +259,7 @@ services:
     # url: http://172.17.0.1:11000/
     url: http://fastify_whatsapp:11000/
     routes:
-      - name: fastify-v1-all
+      - name: fastify-whatsapp-v1-all
         strip_path: true
         paths:
           - /whatsapp/
