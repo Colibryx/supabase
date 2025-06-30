@@ -195,6 +195,11 @@ services:
       DNS_NODES: "''"
       RLIMIT_NOFILE: "10000"
       APP_NAME: realtime
+      TENANT_MAX_JOINS_PER_SECOND: "1000"
+      TENANT_MAX_EVENTS_PER_SECOND: "1000"
+      TENANT_MAX_CONCURRENT_USERS: "2000"
+      TENANT_MAX_CHANNELS_PER_CLIENT: "500"
+      TENANT_MAX_BYTES_PER_SECOND: "1000000"
       SEED_SELF_HOST: true
     logging: *default-logging
 
