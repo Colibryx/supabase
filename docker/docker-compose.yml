@@ -86,8 +86,6 @@ services:
     depends_on:
       supavisor:
         condition: service_healthy
-      analytics:
-        condition: service_healthy
     healthcheck:
       test:
         [
