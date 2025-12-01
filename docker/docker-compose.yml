@@ -16,7 +16,7 @@ x-logging:
 services:
   studio:
     container_name: supabase-${PROJECT_NAME}-studio
-    image: supabase/studio:2025.07.28-sha-578b707
+    image: supabase/studio:2025.11.26-sha-8f096b5
     restart: unless-stopped
     healthcheck:
       test:
@@ -76,7 +76,7 @@ services:
 
   auth:
     container_name: supabase-${PROJECT_NAME}-auth
-    image: supabase/gotrue:v2.177.0
+    image: supabase/gotrue:v2.183.0
     depends_on:
       supavisor:
         condition: service_healthy
@@ -137,7 +137,7 @@ services:
 
   rest:
     container_name: supabase-${PROJECT_NAME}-rest
-    image: postgrest/postgrest:v12.2.12
+    image: postgrest/postgrest:v13.0.7
     depends_on:
       supavisor:
         condition: service_healthy
@@ -159,7 +159,7 @@ services:
 
   realtime:
     container_name: realtime-dev.supabase-${PROJECT_NAME}-realtime
-    image: supabase/realtime:v2.41.9
+    image: supabase/realtime:v2.65.3
     depends_on:
       supavisor:
         condition: service_healthy
@@ -205,7 +205,7 @@ services:
 
   storage:
     container_name: supabase-${PROJECT_NAME}-storage
-    image: supabase/storage-api:v1.25.12
+    image: supabase/storage-api:v1.32.0
     depends_on:
       supavisor:
         condition: service_healthy
@@ -266,7 +266,7 @@ services:
 
   meta:
     container_name: supabase-${PROJECT_NAME}-meta
-    image: supabase/postgres-meta:v0.91.2
+    image: supabase/postgres-meta:v0.93.1
     depends_on:
       supavisor:
         condition: service_healthy
@@ -363,33 +363,33 @@ services:
       - db-config:/etc/postgresql-custom
     logging: *default-logging
 
-  vector:
-    container_name: supabase-${PROJECT_NAME}-vector
-    image: timberio/vector:0.28.1-alpine
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://vector:9001/health"
-        ]
-      timeout: 5s
-      interval: 5s
-      retries: 3
-    volumes:
-      - ./volumes/logs/vector.yml:/etc/vector/vector.yml:ro
-      - ${DOCKER_SOCKET_LOCATION}:/var/run/docker.sock:ro
-    environment:
-      LOGFLARE_API_KEY: ${LOGFLARE_API_KEY}
-    command: [ "--config", "/etc/vector/vector.yml" ]
-    logging: *default-logging
+  # vector:
+  #   container_name: supabase-${PROJECT_NAME}-vector
+  #   image: timberio/vector:0.28.1-alpine
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD",
+  #         "wget",
+  #         "--no-verbose",
+  #         "--tries=1",
+  #         "--spider",
+  #         "http://vector:9001/health"
+  #       ]
+  #     timeout: 5s
+  #     interval: 5s
+  #     retries: 3
+  #   volumes:
+  #     - ./volumes/logs/vector.yml:/etc/vector/vector.yml:ro
+  #     - ${DOCKER_SOCKET_LOCATION}:/var/run/docker.sock:ro
+  #   environment:
+  #     LOGFLARE_API_KEY: ${LOGFLARE_API_KEY}
+  #   command: [ "--config", "/etc/vector/vector.yml" ]
+  #   logging: *default-logging
 
   supavisor:
     container_name: supabase-${PROJECT_NAME}-pooler
-    image: supabase/supavisor:2.5.7
+    image: supabase/supavisor:2.7.4
     healthcheck:
       test: curl -sSfL --head -o /dev/null "http://127.0.0.1:4000/api/health"
       interval: 10s
