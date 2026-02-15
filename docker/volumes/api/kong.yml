@@ -30,10 +30,30 @@ basicauth_credentials:
     username: $DASHBOARD_USERNAME
     password: $DASHBOARD_PASSWORD
 
+
+
 ###
 ### API Routes
 ###
 services:
+  ## -----------------------------------------------------------------------
+  ## 1. NUOVO SERVIZIO: ROBOTS.TXT (Blocca i crawler)
+  ## -----------------------------------------------------------------------
+  - name: robots-txt
+    url: http://localhost
+    routes:
+      - name: robots-txt-route
+        paths:
+          - /robots.txt
+        strip_path: false
+    plugins:
+      - name: request-termination
+        config:
+          status_code: 200
+          content_type: text/plain
+          body: |
+            User-agent: *
+            Disallow: /
   ## Open Auth routes
   - name: auth-v1-open
     url: http://auth:9999/verify
@@ -104,6 +124,11 @@ services:
           allow:
             - admin
             - anon
+      - name: response-transformer
+        config:
+          add:
+            headers:
+              - X-Robots-Tag:noindex
 
   ## Secure GraphQL routes
   - name: graphql-v1
@@ -185,6 +210,11 @@ services:
           - /storage/v1/
     plugins:
       - name: cors
+      - name: response-transformer
+        config:
+          add:
+            headers:
+              - X-Robots-Tag:noindex
 
   ## Edge Functions routes
   - name: functions-v1

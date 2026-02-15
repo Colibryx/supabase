@@ -62,7 +62,7 @@ services:
       KONG_DECLARATIVE_CONFIG: /home/kong/kong.yml
       KONG_PORT_MAPS: 443:8000
       KONG_DNS_ORDER: LAST,A,CNAME
-      KONG_PLUGINS: request-transformer,cors,key-auth,acl,basic-auth
+      KONG_PLUGINS: bundled
       KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
       KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
       SUPABASE_ANON_KEY: ${ANON_KEY}
