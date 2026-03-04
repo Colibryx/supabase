@@ -16,7 +16,7 @@ x-logging:
 services:
   studio:
     container_name: supabase-${PROJECT_NAME}-studio
-    image: supabase/studio:2025.11.26-sha-8f096b5
+    image: supabase/studio:${STUDIO_IMAGE_VERSION:-2025.11.26-sha-8f096b5}
     restart: unless-stopped
     healthcheck:
       test:
@@ -51,7 +51,7 @@ services:
 
   kong:
     container_name: supabase-${PROJECT_NAME}-kong
-    image: kong:2.8.1
+    image: kong:${KONG_IMAGE_VERSION:-2.8.1}
     restart: unless-stopped
     entrypoint: bash -c 'eval "echo \"$$(cat ~/temp.yml)\"" > ~/kong.yml && /docker-entrypoint.sh kong docker-start'
     ports:
@@ -76,7 +76,7 @@ services:
 
   auth:
     container_name: supabase-${PROJECT_NAME}-auth
-    image: supabase/gotrue:v2.183.0
+    image: supabase/gotrue:${AUTH_IMAGE_VERSION:-v2.183.0}
     depends_on:
       supavisor:
         condition: service_healthy
@@ -137,7 +137,7 @@ services:
 
   rest:
     container_name: supabase-${PROJECT_NAME}-rest
-    image: postgrest/postgrest:v13.0.7
+    image: postgrest/postgrest:${REST_IMAGE_VERSION:-v13.0.7}
     depends_on:
       supavisor:
         condition: service_healthy
@@ -159,7 +159,7 @@ services:
 
   realtime:
     container_name: realtime-dev.supabase-${PROJECT_NAME}-realtime
-    image: supabase/realtime:v2.65.3
+    image: supabase/realtime:${REALTIME_IMAGE_VERSION:-v2.65.3}
     depends_on:
       supavisor:
         condition: service_healthy
@@ -205,7 +205,7 @@ services:
 
   storage:
     container_name: supabase-${PROJECT_NAME}-storage
-    image: supabase/storage-api:v1.32.0
+    image: supabase/storage-api:${STORAGE_IMAGE_VERSION:-v1.32.0}
     depends_on:
       supavisor:
         condition: service_healthy
@@ -256,7 +256,7 @@ services:
 
   imgproxy:
     container_name: supabase-${PROJECT_NAME}-imgproxy
-    image: darthsim/imgproxy:v3.8.0
+    image: darthsim/imgproxy:${IMGPROXY_IMAGE_VERSION:-v3.8.0}
     healthcheck:
       test: [ "CMD", "imgproxy", "health" ]
       timeout: 5s
@@ -273,7 +273,7 @@ services:
 
   meta:
     container_name: supabase-${PROJECT_NAME}-meta
-    image: supabase/postgres-meta:v0.93.1
+    image: supabase/postgres-meta:${META_IMAGE_VERSION:-v0.93.1}
     depends_on:
       supavisor:
         condition: service_healthy
@@ -321,7 +321,7 @@ services:
 
   db:
     container_name: supabase-${PROJECT_NAME}-db
-    image: supabase/postgres:17.4.1.067
+    image: supabase/postgres:${DB_IMAGE_VERSION:-17.4.1.067}
     #image: supabase/postgres:15.8.1.124
     healthcheck:
       test: pg_isready -U postgres -h localhost
@@ -393,7 +393,7 @@ services:
 
   supavisor:
     container_name: supabase-${PROJECT_NAME}-pooler
-    image: supabase/supavisor:2.7.4
+    image: supabase/supavisor:${SUPAVISOR_IMAGE_VERSION:-2.7.4}
     healthcheck:
       test: curl -sSfL --head -o /dev/null "http://127.0.0.1:4000/api/health"
       interval: 10s
@@ -437,22 +437,42 @@ services:
 
   fastify_api:
     container_name: supabase-${PROJECT_NAME}-fastify-api
-    image: colibryx/supabase-fastify
+    image: colibryx/supabase-fastify:${FASTIFY_IMAGE_VERSION:-latest}
     command: 
       - /bin/sh
       - -c
-      - yarn && yarn build:start
+      - yarn && yarn build:start:primary
     healthcheck:
       test: curl -sSfL --head -o /dev/null "http://127.0.0.1:11000/api/health"
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 2s
+      retries: 3
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
     volumes:
       - ./volumes/fastify:/home/node/fastify
+    logging: *default-logging
+
+  fastify_api_backup:
+    container_name: supabase-${PROJECT_NAME}-fastify-api-backup
+    image: colibryx/supabase-fastify:${FASTIFY_IMAGE_VERSION:-latest}
+    command: 
+      - /bin/sh
+      - -c
+      - yarn && yarn build:start:secondary
+    healthcheck:
+      test: curl -sSfL --head -o /dev/null "http://127.0.0.1:11000/api/health"
+      interval: 5s
+      timeout: 2s
+      retries: 3
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./volumes/fastify_backup:/home/node/fastify
     logging: *default-logging
 
   # fastify_whatsapp:

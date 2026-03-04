@@ -33,6 +33,32 @@ basicauth_credentials:
 
 
 ###
+### Upstreams
+###
+upstreams:
+  - name: fastify-cluster
+    algorithm: round-robin
+    targets:
+      - target: http://fastify_api:11000
+        weight: 1
+      - target: http://fastify_api_backup:11000
+        weight: 1
+    healthchecks:
+      active:
+        type: http
+        http_path: "/api/health"
+        timeout: 1
+        concurrency: 2
+        healthy:
+          interval: 5
+          successes: 1 # Basta 1 successo per tornare online
+        unhealthy:
+          interval: 1 # Controllo frequente per rilevare subito il crash
+          tcp_failures: 1
+          http_failures: 1
+          http_statuses: [503, 500, 502, 504] # Se riceve 503 (dal nostro /sys/drain), stacca subito.
+
+###
 ### API Routes
 ###
 services:
@@ -274,8 +300,7 @@ services:
   ## Fastify Functions routes
   - name: fastify-v1
     _comment: 'FASTIFY Functions: /fastify/* -> http://172.17.0.1:11000/*'
-    # url: http://172.17.0.1:11000/
-    url: http://fastify_api:11000/
+    host: fastify-cluster
     routes:
       - name: fastify-v1-all
         strip_path: true
@@ -298,8 +323,7 @@ services:
   ## TRPC Docs routes
   - name: trpc-docs-v1
     _comment: 'TRPC Docs: /docs/* -> http://172.17.0.1:11000/*'
-    # url: http://172.17.0.1:11000/
-    url: http://fastify:11000/
+    host: fastify-cluster
     routes:
       - name: trpc-docs-all
         strip_path: false
