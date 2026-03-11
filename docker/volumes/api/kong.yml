@@ -39,9 +39,9 @@ upstreams:
   - name: fastify-cluster
     algorithm: round-robin
     targets:
-      - target: http://fastify_api:11000
+      - target: fastify_api:11000
         weight: 1
-      - target: http://fastify_api_backup:11000
+      - target: fastify_api_backup:11000
         weight: 1
     healthchecks:
       active:
