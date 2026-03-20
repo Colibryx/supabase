@@ -201,6 +201,8 @@ services:
       TENANT_MAX_CHANNELS_PER_CLIENT: "500"
       TENANT_MAX_BYTES_PER_SECOND: "1000000"
       SEED_SELF_HOST: true
+      RUN_JANITOR: true
+      DISABLE_HEALTHCHECK_LOGGING: true
     logging: *default-logging
 
   storage:
